@@ -19,6 +19,26 @@ open(FD, $fn) || die "cannot open $fn";
 my @lines = ();
 while(<FD>){
 	s/[\n\r]+$//;
+	if(/\. /){					# Try to cr at ".", but not to 1.2 xxxx 1.xxxx 
+		my $ll = "";
+		my @w = split(/\. /, $_);
+		for(my $i = 0; $i <= $#w; $i++){
+			my $l = $w[$i];
+			#print"[$l]\n";
+			if($l =~ /^\d[\d\.]*$/){
+				$ll .= $l . " ";
+				#print"<$ll>\n";
+				next;
+			}
+			$l = $ll . $l;
+			$l .= "." if($i < $#w);
+			#print "($l)\n";
+			push(@lines, $l);
+			$ll = "";
+		}
+		push(@lines, $ll) if($ll);
+		next;
+	}
 	push(@lines, $_);
 	#print "[$_]\n";
 #	s/^[0-9]+ //;
@@ -53,6 +73,10 @@ for(my $l = 0; $l <= $#lines; $l++){
 	}
 	elsif($ln =~ /^I+\.|^IV\.|^V\./){
 		#print "I: $ln\n";
+		&flash();
+	}
+	elsif($ln =~ /^\d+/){
+		push(@one_line, "\n");
 		&flash();
 	}
 	push(@one_line, $ln);

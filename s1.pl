@@ -9,10 +9,10 @@ use warnings;
 
 my $author = "高橋";
 my $fn = "/mnt/c/temp/SentinelOne.txt";
+my $VERBOSE = 0;
 for(@ARGV){
-	if(/-of/){
-		my $outf = "/mnt/c/temp/s1-out.txt";
-		open(STDOUT, '>', $outf) || die "cannot redirect STDOUT $outf";
+	if(/-v/){
+		$VERBOSE = 1;
 	}
 	else {
 		$fn = $ARGV[0];
@@ -47,7 +47,7 @@ for(my $i = 0; $i < $#lines; $i += 2){
 	else {
 		$val = $lines[$i+1];
 	}
-	print join("\t", $tag, $val) . "\n";
+	print join("\t", $tag, $val) . "\n" if($VERBOSE);
 	$TAGS{$tag} = $val;
 }
 my @targets = ("First seen", "Classification", "THREAT FILE NAME", 
@@ -60,6 +60,8 @@ foreach my $tag (@targets){
 open(CLIP, "| clip.exe") || die "clip.exe";
 print CLIP join("\t", &ut2dt(time), "Resolved", $author, @result) . "\n";
 close(CLIP);
+print "send to clipboad\n";
+print join("\t", &ut2dt(time), "Resolved", $author, @result) . "\n";
 
 sub ut2dt
 {
